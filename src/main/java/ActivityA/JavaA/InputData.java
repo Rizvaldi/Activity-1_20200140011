@@ -18,40 +18,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class InputData {
     @RequestMapping("/prosesinput")
     public String inputanuser(HttpServletRequest data, Model buah){
+        InputData2 InptData2 = new InputData2();
+        //getting data
         String namabuah = data.getParameter("var_namabuah");
         String hargabuah = data.getParameter("var_hargaperkilo");
-        Integer chbuah = Integer.valueOf(hargabuah);
         String jumlahbuah = data.getParameter("var_jumlahbeli");
-        Double cjbuah = Double.valueOf(jumlahbuah);
-        Double jumlahbayar = chbuah * cjbuah;
-        Double totalbayar = null;
-        Integer diskon = 0;
-        Double hargadiskon = 0.0;
+        //import data from process to variabel
         
-        if(jumlahbayar < 16000){
-            totalbayar = jumlahbayar - (jumlahbayar*diskon/100);
-            hargadiskon = jumlahbayar*diskon/100;
-            
-        }else if(jumlahbayar <=25000){
-            diskon = 10;
-            totalbayar = jumlahbayar - (jumlahbayar*diskon/100);
-            hargadiskon = jumlahbayar*diskon/100;
-          
-            
-        }else{
-            diskon = 15;
-            totalbayar = jumlahbayar - (jumlahbayar*diskon/100);
-            hargadiskon = jumlahbayar*diskon/100;
-        }
+        Double convharga        = InptData2.newharga(hargabuah);
+        Double convjumlah       = InptData2.newjumlah(jumlahbuah);
+        Double jumlahbayar      = InptData2.newjumlahbayar(convharga, convjumlah);
+        String diskonpersen     = InptData2.diskon(jumlahbayar);
+        Double hargadiskon      = InptData2.newhargadiskon(jumlahbayar, Integer.valueOf(diskonpersen));
+        Double totalbayar       = InptData2.newtotalbayar(jumlahbayar, hargadiskon);
+        InptData2.math(jumlahbayar, Integer.SIZE, totalbayar, hargadiskon);
+        //
         buah.addAttribute("name", namabuah);
-        buah.addAttribute("price", chbuah);
-        buah.addAttribute("kilo", cjbuah);
-        buah.addAttribute("tbayar", totalbayar);
-        buah.addAttribute("discountrp", hargadiskon);
-        buah.addAttribute("disc", diskon);
+        buah.addAttribute("price", hargabuah);
+        buah.addAttribute("kilo", jumlahbuah);
         buah.addAttribute("total0", jumlahbayar);
+        buah.addAttribute("discountrp", hargadiskon);
+        buah.addAttribute("disc", diskonpersen);
+        buah.addAttribute("tbayar", totalbayar);
         return "RizvaldiF";
-    }
+    }  
     
 }
 
